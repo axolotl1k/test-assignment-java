@@ -16,16 +16,24 @@ import ua.kpi.comsys.test2.NumberList;
 
 /**
  * Custom implementation of INumberList interface.
- * Variant: 3518
- * C3 = 2 (Circular Doubly Linked List)
- * C5 = 3 (Decimal), Additional = Hexadecimal (Base 16)
- * C7 = 4 (Modulo %)
+ * Variant: 3518.
+ * <p>
+ * Configuration based on variant:
+ * <ul>
+ * <li><b>C3 (List Type) = 2:</b> Circular Doubly Linked List.</li>
+ * <li><b>C5 (Base System) = 3:</b> Decimal system (base 10).</li>
+ * <li><b>Additional Base System (C5+1):</b> Hexadecimal (base 16).</li>
+ * <li><b>C7 (Operation) = 4:</b> Remainder of division (Modulo %).</li>
+ * </ul>
  *
  * @author Oleksandr Sliusar IO-35
  */
 public class NumberListImpl implements NumberList {
 
-    // Inner class for the node of a circular doubly linked list
+    /**
+     * Inner class representing a node in the circular doubly linked list.
+     * Stores a single digit of the number.
+     */
     private static class Node {
         Byte value;
         Node next;
@@ -39,12 +47,15 @@ public class NumberListImpl implements NumberList {
     private Node head;
     private int size;
 
-    // Radix of the current list (default is 10)
+    /**
+     * The radix (base) of the current number list representation.
+     * Default is 10 (Decimal). Becomes 16 (Hexadecimal) after changeScale().
+     */
     private int radix = 10;
 
     /**
      * Default constructor.
-     * Returns empty <tt>NumberListImpl</tt>
+     * Returns an empty <tt>NumberListImpl</tt>.
      */
     public NumberListImpl() {
         this.head = null;
@@ -52,10 +63,10 @@ public class NumberListImpl implements NumberList {
     }
 
     /**
-     * Constructs new <tt>NumberListImpl</tt> by <b>decimal</b> number
-     * from file, defined in string format.
+     * Constructs new <tt>NumberListImpl</tt> by reading a <b>decimal</b> number
+     * from a file. The number is expected to be in string format.
      *
-     * @param file - file where number is stored.
+     * @param file - file where the number is stored.
      */
     public NumberListImpl(File file) {
         this();
@@ -72,7 +83,7 @@ public class NumberListImpl implements NumberList {
     }
 
     /**
-     * Constructs new <tt>NumberListImpl</tt> by <b>decimal</b> number
+     * Constructs new <tt>NumberListImpl</tt> by parsing a number
      * in string notation.
      *
      * @param value - number in string notation.
@@ -82,14 +93,25 @@ public class NumberListImpl implements NumberList {
         parseAndAdd(value);
     }
 
-    // Private constructor for creating a list with a different radix
+    /**
+     * Private constructor for creating a list with a specific radix.
+     * Used internally for scale changes.
+     *
+     * @param value - string representation of the number.
+     * @param radix - the base of the number system (e.g., 16 for Hex).
+     */
     private NumberListImpl(String value, int radix) {
         this();
         this.radix = radix;
         parseAndAdd(value);
     }
 
-    // Helper method for string parsing
+    /**
+     * Parses the string value and adds digits to the list.
+     * Handles Hex digits (0-9, A-F).
+     *
+     * @param value - string to parse.
+     */
     private void parseAndAdd(String value) {
         if (value == null || value.isEmpty()) return;
 
@@ -109,7 +131,7 @@ public class NumberListImpl implements NumberList {
     }
 
     /**
-     * Saves the number, stored in the list, into specified file
+     * Saves the number, stored in the list, into the specified file
      * in <b>decimal</b> scale of notation.
      *
      * @param file - file where number has to be stored.
@@ -123,20 +145,23 @@ public class NumberListImpl implements NumberList {
     }
 
     /**
-     * Returns student's record book number, which has 4 decimal digits.
+     * Returns student's record book number.
+     * Used by tests to determine the variant configuration.
      *
-     * @return student's record book number.
+     * @return 3518 (Student's record book number).
      */
     public static int getRecordBookNumber() {
         return 3518;
     }
 
     /**
-     * Returns new <tt>NumberListImpl</tt> which represents the same number
-     * in other scale of notation, defined by personal test assignment.
-     * Target: Hexadecimal (base 16) for Variant 3518 (C5=3 -> +1 -> 4).
+     * Returns a new <tt>NumberListImpl</tt> which represents the same number
+     * converted to another scale of notation.
+     * <p>
+     * <b>Variant Specifics:</b>
+     * Converts from Decimal (base 10) to <b>Hexadecimal (base 16)</b>.
      *
-     * @return <tt>NumberListImpl</tt> in other scale of notation.
+     * @return <tt>NumberListImpl</tt> in Hexadecimal scale.
      */
     public NumberListImpl changeScale() {
         if (this.isEmpty()) return new NumberListImpl();
@@ -152,12 +177,14 @@ public class NumberListImpl implements NumberList {
     }
 
     /**
-     * Returns new <tt>NumberListImpl</tt> which represents the result of
-     * additional operation, defined by personal test assignment.
-     * Operation: Remainder (%) for Variant 3518 (C7=4).
+     * Returns a new <tt>NumberListImpl</tt> which represents the result of
+     * an additional operation.
+     * <p>
+     * <b>Variant Specifics (C7=4):</b>
+     * Performs the <b>Remainder (Modulo %)</b> operation: {@code this % arg}.
      *
-     * @param arg - second argument of additional operation
-     * @return result of additional operation.
+     * @param arg - second argument (divisor) of the operation.
+     * @return result of {@code this % arg}. Returns "0" if divisor is zero.
      */
     public NumberListImpl additionalOperation(NumberList arg) {
         BigInteger num1 = this.toBigInteger();
@@ -181,7 +208,12 @@ public class NumberListImpl implements NumberList {
         }
     }
 
-    // Helper method: List -> BigInteger (using current radix)
+    /**
+     * Helper method to convert the current list into a BigInteger.
+     * Uses the current {@code radix} to correctly interpret the digits.
+     *
+     * @return BigInteger representation of the list content.
+     */
     private BigInteger toBigInteger() {
         if (this.isEmpty()) return BigInteger.ZERO;
         StringBuilder sb = new StringBuilder();
@@ -199,6 +231,7 @@ public class NumberListImpl implements NumberList {
     /**
      * Returns string representation of number, stored in the list
      * in <b>decimal</b> scale of notation.
+     * If the current list is Hexadecimal, it is converted back to Decimal string.
      *
      * @return string representation in <b>decimal</b> scale.
      */
@@ -268,35 +301,12 @@ public class NumberListImpl implements NumberList {
 
     @Override
     public boolean contains(Object o) {
-        if (isEmpty()) return false;
-        Node current = head;
-        do {
-            if (Objects.equals(current.value, o)) return true;
-            current = current.next;
-        } while (current != head);
-        return false;
+        return indexOf(o) >= 0;
     }
 
     @Override
     public Iterator<Byte> iterator() {
-        return new Iterator<Byte>() {
-            private Node current = head;
-            private int count = 0;
-
-            @Override
-            public boolean hasNext() {
-                return count < size;
-            }
-
-            @Override
-            public Byte next() {
-                if (!hasNext()) throw new NoSuchElementException();
-                Byte val = current.value;
-                current = current.next;
-                count++;
-                return val;
-            }
-        };
+        return listIterator();
     }
 
     @Override
@@ -378,7 +388,13 @@ public class NumberListImpl implements NumberList {
 
     @Override
     public boolean addAll(int index, Collection<? extends Byte> c) {
-        throw new UnsupportedOperationException("Not implemented");
+        if (index < 0 || index > size) throw new IndexOutOfBoundsException();
+        if (c.isEmpty()) return false;
+        // Insert collection elements one by one starting from index
+        for (Byte e : c) {
+            add(index++, e);
+        }
+        return true;
     }
 
     @Override
@@ -423,21 +439,24 @@ public class NumberListImpl implements NumberList {
 
     @Override
     public Byte get(int index) {
-        if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
         return getNode(index).value;
     }
 
     private Node getNode(int index) {
+        if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
+        // Optimization: search from the nearest end (start or end)
         Node current = head;
-        for (int i = 0; i < index; i++) {
-            current = current.next;
+        if (index <= size / 2) {
+            for (int i = 0; i < index; i++) current = current.next;
+        } else {
+            current = head.prev;
+            for (int i = size - 1; i > index; i--) current = current.prev;
         }
         return current;
     }
 
     @Override
     public Byte set(int index, Byte element) {
-        if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
         Node node = getNode(index);
         Byte oldVal = node.value;
         node.value = element;
@@ -454,6 +473,7 @@ public class NumberListImpl implements NumberList {
             Node current = getNode(index);
             Node prev = current.prev;
 
+            // prev <-> newNode <-> current
             prev.next = newNode;
             newNode.prev = prev;
             newNode.next = current;
@@ -466,7 +486,6 @@ public class NumberListImpl implements NumberList {
 
     @Override
     public Byte remove(int index) {
-        if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
         Node node = getNode(index);
         Byte val = node.value;
         removeNode(node);
@@ -502,16 +521,104 @@ public class NumberListImpl implements NumberList {
 
     @Override
     public ListIterator<Byte> listIterator(int index) {
-        throw new UnsupportedOperationException();
+        if (index < 0 || index > size) throw new IndexOutOfBoundsException();
+        return new ListIterator<Byte>() {
+            private Node lastReturned = null;
+            private Node nextNode = (index == size) ? head : (size == 0 ? null : getNode(index));
+            private int nextIndex = index;
+
+            @Override
+            public boolean hasNext() {
+                return nextIndex < size;
+            }
+
+            @Override
+            public Byte next() {
+                if (!hasNext()) throw new NoSuchElementException();
+                lastReturned = nextNode;
+                nextNode = nextNode.next;
+                nextIndex++;
+                return lastReturned.value;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return nextIndex > 0;
+            }
+
+            @Override
+            public Byte previous() {
+                if (!hasPrevious()) throw new NoSuchElementException();
+                nextNode = (nextNode == null) ? head.prev : nextNode.prev;
+                lastReturned = nextNode;
+                nextIndex--;
+                return lastReturned.value;
+            }
+
+            @Override
+            public int nextIndex() {
+                return nextIndex;
+            }
+
+            @Override
+            public int previousIndex() {
+                return nextIndex - 1;
+            }
+
+            @Override
+            public void remove() {
+                if (lastReturned == null) throw new IllegalStateException();
+                Node nodeToRemove = lastReturned;
+                if (lastReturned == nextNode) {
+                    nextNode = nextNode.next;
+                } else {
+                    nextIndex--;
+                }
+                removeNode(nodeToRemove);
+                lastReturned = null;
+            }
+
+            @Override
+            public void set(Byte e) {
+                if (lastReturned == null) throw new IllegalStateException();
+                lastReturned.value = e;
+            }
+
+            @Override
+            public void add(Byte e) {
+                NumberListImpl.this.add(nextIndex, e);
+                nextIndex++;
+                lastReturned = null;
+            }
+        };
     }
 
     @Override
     public List<Byte> subList(int fromIndex, int toIndex) {
-        throw new UnsupportedOperationException();
+        if (fromIndex < 0 || toIndex > size || fromIndex > toIndex) throw new IndexOutOfBoundsException();
+        // Return a new list containing the elements (Deep Copy)
+        // Since implementing a "View" inner class for Circular List is complex for this scope
+        NumberListImpl sub = new NumberListImpl();
+        if (size == 0 || fromIndex == toIndex) return sub;
+
+        Node curr = getNode(fromIndex);
+        for (int i = 0; i < toIndex - fromIndex; i++) {
+            sub.add(curr.value);
+            curr = curr.next;
+        }
+        return sub;
     }
 
     // --- Implementation of specific methods ---
 
+    /**
+     * Exchanges two list elements by their indices.
+     * Swaps the values of the nodes, not the nodes themselves.
+     *
+     * @param index1 - index of first element.
+     * @param index2 - index of second element.
+     * @return true if indices are valid and swap was successful.
+     */
     @Override
     public boolean swap(int index1, int index2) {
         if (index1 < 0 || index1 >= size || index2 < 0 || index2 >= size) return false;
@@ -527,6 +634,10 @@ public class NumberListImpl implements NumberList {
         return true;
     }
 
+    /**
+     * Sorts elements of the list in ascending order.
+     * Implements Bubble Sort algorithm by swapping node values.
+     */
     @Override
     public void sortAscending() {
         // Simple bubble sort of values (nodes are not moved)
@@ -547,6 +658,10 @@ public class NumberListImpl implements NumberList {
         } while (swapped);
     }
 
+    /**
+     * Sorts elements of the list in descending order.
+     * Implements Bubble Sort algorithm by swapping node values.
+     */
     @Override
     public void sortDescending() {
         if (size < 2) return;
@@ -566,6 +681,10 @@ public class NumberListImpl implements NumberList {
         } while (swapped);
     }
 
+    /**
+     * Performs left cyclic shift in the current list.
+     * Moves the head pointer to the next node.
+     */
     @Override
     public void shiftLeft() {
         if (size > 1 && head != null) {
@@ -573,6 +692,10 @@ public class NumberListImpl implements NumberList {
         }
     }
 
+    /**
+     * Performs right cyclic shift in the current list.
+     * Moves the head pointer to the previous node.
+     */
     @Override
     public void shiftRight() {
         if (size > 1 && head != null) {
